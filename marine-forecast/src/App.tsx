@@ -371,11 +371,14 @@ const MarineForecastApp = () => {
               <div className="text-sm text-slate-600">Conditions</div>
               <div className="text-lg font-semibold text-slate-800">{forecast.conditions.current.conditions}</div>
             </div>
-            <div className="bg-blue-50 p-4 rounded">
-              <div className="text-sm text-slate-600">Wind</div>
-              <div className="text-xl font-bold text-slate-800">{forecast.conditions.current.windSpeed}</div>
-              <div className="text-sm text-slate-600">{forecast.conditions.current.windDir} (Gusts {forecast.conditions.current.gusts})</div>
-            </div>
+ <div className="bg-blue-50 p-4 rounded">
+  <div className="text-sm text-slate-600 flex items-center gap-1">
+    <Wind className="w-4 h-4" />
+    Wind
+  </div>
+  <div className="text-xl font-bold text-slate-800">{forecast.conditions.current.windSpeed}</div>
+  <div className="text-sm text-slate-600">{forecast.conditions.current.windDir} (Gusts {forecast.conditions.current.gusts})</div>
+</div>           
             <div className="bg-blue-50 p-4 rounded">
               <div className="text-sm text-slate-600">Humidity</div>
               <div className="text-2xl font-bold text-slate-800">{forecast.conditions.current.humidity}</div>
