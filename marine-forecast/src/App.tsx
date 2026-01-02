@@ -1,18 +1,65 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Cloud, Wind, Waves, Clock, AlertTriangle, RefreshCw } from 'lucide-react';
 
+interface Tide {
+  time: string;
+  type: string;
+  height: string;
+}
+
+interface CurrentConditions {
+  temp: string;
+  feelsLike: string;
+  conditions: string;
+  windSpeed: string;
+  windDir: string;
+  gusts: string;
+  pressure: string;
+  humidity: string;
+}
+
+interface PeriodForecast {
+  period: string;
+  temp: string;
+  conditions: string;
+  wind: string;
+  visibility: string;
+  precipitation: string;
+  waves: string;
+}
+
+interface MarineData {
+  waterTemp: string;
+  currentSpeed: string;
+  currentDir: string;
+  sunrise: string;
+  sunset: string;
+}
+
+interface ForecastData {
+  location: string;
+  shiftStart: string;
+  shiftEnd: string;
+  tides: Tide[];
+  conditions: {
+    current: CurrentConditions;
+    forecast: PeriodForecast[];
+  };
+  marine: MarineData;
+}
+
 const MarineForecastApp = () => {
-  const [forecast, setForecast] = useState(null);
+  const [forecast, setForecast] = useState<ForecastData | null>(null);
   const [loading, setLoading] = useState(true);
-  const [lastUpdate, setLastUpdate] = useState(null);
-  const [error, setError] = useState(null);
-  const [debugLog, setDebugLog] = useState([]);
+  const [lastUpdate, setLastUpdate] = useState<Date | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [debugLog, setDebugLog] = useState<string[]>([]);
 
   const SEATTLE_LAT = 47.6062;
   const SEATTLE_LON = -122.3321;
   const NOAA_STATION = '9447130';
 
-  const addLog = (msg) => {
+  const addLog = (msg: string) => {
     console.log(msg);
     setDebugLog(prev => [...prev, `${new Date().toLocaleTimeString()}: ${msg}`]);
   };
@@ -35,7 +82,7 @@ const MarineForecastApp = () => {
       shiftEnd.setDate(shiftEnd.getDate() + 1);
       shiftEnd.setHours(8, 0, 0, 0);
 
-      const formatDate = (date) => {
+      const formatDate = (date: Date) => {
         const year = date.getFullYear();
         const month = String(date.getMonth() + 1).padStart(2, '0');
         const day = String(date.getDate()).padStart(2, '0');
@@ -56,14 +103,14 @@ const MarineForecastApp = () => {
       addLog('Weather data received successfully');
 
       addLog('Fetching tide data from NOAA...');
-      let tides = [];
+      let tides: Tide[] = [];
       try {
         const tideUrl = `https://api.tidesandcurrents.noaa.gov/api/prod/datagetter?begin_date=${today}&end_date=${tomorrow}&station=${NOAA_STATION}&product=predictions&datum=MLLW&time_zone=lst_ldt&units=english&interval=hilo&format=json`;
         const tideResponse = await fetch(tideUrl);
         const tideData = await tideResponse.json();
         
         if (tideData.predictions) {
-          tides = tideData.predictions.slice(0, 4).map(tide => {
+          tides = tideData.predictions.slice(0, 4).map((tide: any) => {
             const time = new Date(tide.t);
             return {
               time: time.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false }),
@@ -74,7 +121,7 @@ const MarineForecastApp = () => {
           addLog(`Tide data received: ${tides.length} tides`);
         }
       } catch (e) {
-        addLog(`Tide fetch failed: ${e.message}`);
+        addLog(`Tide fetch failed: ${e instanceof Error ? e.message : 'Unknown error'}`);
       }
 
       addLog('Fetching water temperature from NOAA...');
@@ -88,11 +135,11 @@ const MarineForecastApp = () => {
           addLog(`Water temp: ${waterTemp}`);
         }
       } catch (e) {
-        addLog(`Water temp unavailable: ${e.message}`);
+        addLog(`Water temp unavailable: ${e instanceof Error ? e.message : 'Unknown error'}`);
       }
 
-      const getWeatherDescription = (code) => {
-        const codes = {
+      const getWeatherDescription = (code: number): string => {
+        const codes: Record<number, string> = {
           0: 'Clear', 1: 'Mainly Clear', 2: 'Partly Cloudy', 3: 'Overcast',
           45: 'Foggy', 48: 'Foggy', 51: 'Light Drizzle', 53: 'Drizzle',
           55: 'Heavy Drizzle', 61: 'Light Rain', 63: 'Rain', 65: 'Heavy Rain',
@@ -102,12 +149,12 @@ const MarineForecastApp = () => {
         return codes[code] || 'Unknown';
       };
 
-      const getWindDirection = (degrees) => {
+      const getWindDirection = (degrees: number): string => {
         const dirs = ['N', 'NNE', 'NE', 'ENE', 'E', 'ESE', 'SE', 'SSE', 'S', 'SSW', 'SW', 'WSW', 'W', 'WNW', 'NW', 'NNW'];
         return dirs[Math.round(degrees / 22.5) % 16];
       };
 
-      const metersToMiles = (meters) => {
+      const metersToMiles = (meters: number): string => {
         return (meters / 1609.34).toFixed(1);
       };
 
@@ -132,7 +179,7 @@ const MarineForecastApp = () => {
         { name: 'Night (00:00-08:00)', start: 0, end: 8 }
       ];
 
-      const periodForecasts = periods.map(period => {
+      const periodForecasts: PeriodForecast[] = periods.map(period => {
         let startIdx, endIdx;
         
         if (period.start < 8) {
@@ -169,12 +216,13 @@ const MarineForecastApp = () => {
         const minTemp = Math.min(...temps);
         const maxTemp = Math.max(...temps);
         const maxPrecip = Math.max(...precips);
-        const avgWind = (winds.reduce((a, b) => a + b, 0) / winds.length).toFixed(0);
+        const avgWind = (winds.reduce((a: number, b: number) => a + b, 0) / winds.length).toFixed(0);
         const maxGust = Math.max(...gusts).toFixed(0);
-        const avgWindDir = getWindDirection(windDirs.reduce((a, b) => a + b, 0) / windDirs.length);
+        const avgWindDir = getWindDirection(windDirs.reduce((a: number, b: number) => a + b, 0) / windDirs.length);
         const minVis = Math.min(...visibility);
         const dominantWeather = getWeatherDescription(weatherCodes[Math.floor(weatherCodes.length / 2)]);
-        const waveHeight = avgWind < 10 ? '1-2 ft' : avgWind < 15 ? '2-3 ft' : avgWind < 20 ? '3-5 ft' : '4-6 ft';
+        const avgWindNum = parseFloat(avgWind);
+        const waveHeight = avgWindNum < 10 ? '1-2 ft' : avgWindNum < 15 ? '2-3 ft' : avgWindNum < 20 ? '3-5 ft' : '4-6 ft';
 
         return {
           period: period.name,
@@ -188,7 +236,7 @@ const MarineForecastApp = () => {
       });
 
       addLog('Building final forecast object...');
-      const forecastObj = {
+      const forecastObj: ForecastData = {
         location: "Elliott Bay, Seattle",
         shiftStart: shiftStart.toLocaleString('en-US', { 
           weekday: 'long', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'
@@ -223,8 +271,9 @@ const MarineForecastApp = () => {
       setForecast(forecastObj);
       setLastUpdate(new Date());
     } catch (err) {
-      addLog(`ERROR: ${err.message}`);
-      setError(err.message);
+      const errorMsg = err instanceof Error ? err.message : 'Unknown error';
+      addLog(`ERROR: ${errorMsg}`);
+      setError(errorMsg);
     } finally {
       setLoading(false);
     }
@@ -273,6 +322,8 @@ const MarineForecastApp = () => {
       </div>
     );
   }
+
+  if (!forecast) return null;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-900 via-blue-800 to-slate-900 p-4 md:p-8">
@@ -413,4 +464,4 @@ const MarineForecastApp = () => {
   );
 };
 
-export default MarineForecastApp
+export default MarineForecastApp;
