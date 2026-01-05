@@ -387,17 +387,17 @@ const MarineForecastApp = () => {
         </div>
 
         <div className="bg-white p-6 shadow-lg">
-          <h2 className="text-2xl font-bold text-slate-800 mb-4 flex items-center gap-2">
+          <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-100 mb-4 flex items-center gap-2">
             <Waves className="w-6 h-6" />
             Tides - NOAA Station {NOAA_STATION}
           </h2>
           {forecast.tides.length > 0 ? (
             <div className="grid md:grid-cols-4 gap-4">
               {forecast.tides.map((tide, idx) => (
-                <div key={idx} className={`p-4 rounded ${tide.type === 'High' ? 'bg-blue-100' : 'bg-amber-50'}`}>
-                  <div className="text-sm text-slate-600">{tide.type} Tide</div>
-                  <div className="text-2xl font-bold text-slate-800">{tide.time}</div>
-                  <div className="text-lg font-semibold text-slate-700">{tide.height}</div>
+                <div key={idx} className={`p-4 rounded ${tide.type === 'High' ? 'bg-blue-100 dark:bg-blue-900/40' : 'bg-amber-50 dark:bg-amber-900/40'} dark:border dark:border-slate-600`}>
+                  <div className="text-sm text-slate-600 dark:text-slate-300">{tide.type} Tide</div>
+                  <div className="text-2xl font-bold text-slate-800 dark:text-slate-100">{tide.time}</div>
+                  <div className="text-lg font-semibold text-slate-700 dark:text-slate-200">{tide.height}</div>
                 </div>
               ))}
             </div>
@@ -407,18 +407,18 @@ const MarineForecastApp = () => {
         </div>
 
         <div className="bg-white p-6 shadow-lg">
-          <h2 className="text-2xl font-bold text-slate-800 mb-4">Shift Period Forecast</h2>
+          <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-100 mb-4">Shift Period Forecast</h2>
           <div className="space-y-4">
             {forecast.conditions.forecast.map((period, idx) => (
-              <div key={idx} className="bg-slate-50 p-4 rounded-lg border border-slate-200">
-                <div className="font-bold text-lg text-slate-800 mb-3">{period.period}</div>
+              <div key={idx} className="bg-slate-50 p-4 rounded-lg border border-slate-200 dark:bg-slate-700 dark:border-slate-600">
+                <div className="font-bold text-lg text-slate-800 dark:text-slate-100 mb-3">{period.period}</div>
                 <div className="grid md:grid-cols-3 gap-4 text-sm">
-                  <div><span className="text-slate-600">Temperature:</span> <span className="ml-2 font-semibold">{period.temp}</span></div>
-                  <div><span className="text-slate-600">Conditions:</span> <span className="ml-2 font-semibold">{period.conditions}</span></div>
-                  <div><span className="text-slate-600">Precipitation:</span> <span className="ml-2 font-semibold">{period.precipitation}</span></div>
-                  <div><span className="text-slate-600">Wind:</span> <span className="ml-2 font-semibold">{period.wind}</span></div>
-                  <div><span className="text-slate-600">Visibility:</span> <span className="ml-2 font-semibold">{period.visibility}</span></div>
-                  <div><span className="text-slate-600">Wave Height:</span> <span className="ml-2 font-semibold text-blue-700">{period.waves}</span></div>
+                  <div><span className="text-slate-600 dark:text-slate-300">Temperature:</span> <span className="ml-2 font-semibold">{period.temp}</span></div>
+                  <div><span className="text-slate-600 dark:text-slate-300">Conditions:</span> <span className="ml-2 font-semibold">{period.conditions}</span></div>
+                  <div><span className="text-slate-600 dark:text-slate-300">Precipitation:</span> <span className="ml-2 font-semibold">{period.precipitation}</span></div>
+                  <div><span className="text-slate-600 dark:text-slate-300">Wind:</span> <span className="ml-2 font-semibold">{period.wind}</span></div>
+                  <div><span className="text-slate-600 dark:text-slate-300">Visibility:</span> <span className="ml-2 font-semibold">{period.visibility}</span></div>
+                  <div><span className="text-slate-600 dark:text-slate-300">Wave Height:</span> <span className="ml-2 font-semibold text-blue-700 dark:text-blue-300">{period.waves}</span></div>
                 </div>
               </div>
             ))}
@@ -441,13 +441,13 @@ const MarineForecastApp = () => {
               <div className="text-sm text-slate-600">Pressure</div>
               <div className="text-xl font-bold text-slate-800">{forecast.conditions.current.pressure}</div>
             </div>
-            <div className="bg-slate-50 p-4 rounded">
-              <div className="text-sm text-slate-600">Sunrise</div>
-              <div className="text-xl font-bold text-slate-800">{forecast.marine.sunrise}</div>
+            <div className="bg-slate-50 p-4 rounded dark:bg-slate-700">
+              <div className="text-sm text-slate-600 dark:text-slate-300">Sunrise</div>
+              <div className="text-xl font-bold text-slate-800 dark:text-slate-100">{forecast.marine.sunrise}</div>
             </div>
-            <div className="bg-slate-50 p-4 rounded">
-              <div className="text-sm text-slate-600">Sunset</div>
-              <div className="text-xl font-bold text-slate-800">{forecast.marine.sunset}</div>
+            <div className="bg-slate-50 p-4 rounded dark:bg-slate-700">
+              <div className="text-sm text-slate-600 dark:text-slate-300">Sunset</div>
+              <div className="text-xl font-bold text-slate-800 dark:text-slate-100">{forecast.marine.sunset}</div>
             </div>
           </div>
         </div>
